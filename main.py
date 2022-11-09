@@ -19,17 +19,6 @@ def reorder_chords(index_chord: list):
     return zip(indexes, reversed(chords))
 
 
-def separate_line(line: str):
-    """separate line of text into chords_line, text_line"""
-    chords, text_line = extract_chords(line)
-
-    # chords = reorder_chords(chords)
-
-    chords_line, text_line = chords_to_line(chords, text_line)
-
-    return chords_line, text_line
-
-
 def chords_to_line(chords, text_line: str):
     """
     Stringify
@@ -53,20 +42,38 @@ def extract_chords(line: str):
     text_line = []
 
     chord = []
-    index = 0
+    counter = 0
     for char in line:
         if char in HEB_CHARS + OTHER_CHARS + END_LINE_CHARS:
             if chord:
-                chords.append((index - 1, ''.join(chord)))
+                chords.append(counter)
+                counter = 0
+                chords.append(''.join(chord))
                 chord = []
 
             text_line.append(char)
-            index += 1
+            counter += 1
         elif char in CHORDS_CHARS:
             chord.append(char)
         else:
             print('unknown char, debug me!! ', char)
+    
+    chords.append(counter)
+    if chord:
+        chords.append(''.join(chord))
+
     return chords, ''.join(text_line)
+
+
+def separate_line(line: str):
+    """separate line of text into chords_line, text_line"""
+    chords, text_line = extract_chords(line)
+
+    chords = reorder_chords(chords)
+
+    chords_line, text_line = chords_to_line(chords, text_line)
+
+    return chords_line, text_line
 
 
 def main(filename: str):
