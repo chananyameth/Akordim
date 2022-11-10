@@ -37,8 +37,26 @@ def chords_to_line(chords, text_line: str):
     return chords_line, text_line
 
 
+def chords_to_line_1(spaces, chords):
+    line = ''
+    for i in len(chords):
+        line += ' '*spaces[i] + chords[i]
+    line += ' '*spaces[-1]
+    return line
+
+
+def space_out_chords(chords, spaces, text_line):
+    accumulate = 0
+    for i in len(chords):
+        accumulate += spaces[i] + len(chords[i])
+        if diff: len(chords[i]) + 1 - spaces[i+1] > 0:
+            spaces[i+1] += diff
+            text_line = text_line[:accumulate] + '-'*diff + text_line[accumulate:]
+
+
 def extract_chords(line: str):
     chords = []
+    spaces = []
     text_line = []
 
     chord = []
@@ -46,7 +64,7 @@ def extract_chords(line: str):
     for char in line:
         if char in HEB_CHARS + OTHER_CHARS + END_LINE_CHARS:
             if chord:
-                chords.append(counter)
+                spaces.append(counter)
                 counter = 0
                 chords.append(''.join(chord))
                 chord = []
@@ -57,21 +75,27 @@ def extract_chords(line: str):
             chord.append(char)
         else:
             print('unknown char, debug me!! ', char)
-    
-    chords.append(counter)
-    if chord:
-        chords.append(''.join(chord))
 
-    return chords, ''.join(text_line)
+    if chord:
+        spaces.append(counter)
+        counter = 0
+        chords.append(''.join(chord))
+    
+    spaces.append(counter)
+
+    return chords, spaces, ''.join(text_line)
 
 
 def separate_line(line: str):
     """separate line of text into chords_line, text_line"""
-    chords, text_line = extract_chords(line)
+    chords, spaces, text_line = extract_chords(line)
 
-    chords = reorder_chords(chords)
+    chords = reverse(chords)
 
-    chords_line, text_line = chords_to_line(chords, text_line)
+    space_out_chords(chords, spaces, text_line)
+
+    chords_line = chords_to_line_1(spaces, chords)
+    # chords_line, text_line = chords_to_line(chords, text_line)
 
     return chords_line, text_line
 
