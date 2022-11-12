@@ -1,4 +1,5 @@
 import re
+import sys
 
 HEB_CHARS = 'אבגדהוזחטיכלמנסעפצקרשתךםןףץ'
 OTHER_CHARS = r' \-_)(,\.'
@@ -92,4 +93,8 @@ def main(filename: str):
 
 
 if "__main__" == __name__:
-    main('./demo.txt')
+    if len(sys.argv) == 1:
+        main('./demo1.txt')
+    else:
+        for filename in sys.argv:
+            main('./' + filename)
