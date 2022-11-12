@@ -4,6 +4,21 @@ END_LINE_CHARS = '\r\n'
 CHORDS_CHARS = 'ABCDEFGabcdefg123456789b#dim'
 
 
+class SongLine:
+    def __init__(self, chords, spaces, text_line):
+        self.chords = chords
+        self.spaces = spaces
+        self.text_line = text_line
+        self.chords_line = ''  # will be populated
+
+    def insert_text_at(self, text, where):
+        self.text_line = self.text_line[:where] + text + self.text_line[where:]
+
+    @property
+    def text_len(self):
+        return len(self.text_line)
+
+
 def reorder_chords(index_chord: list):
     """
     reverse chords in line, keep spaces the same
@@ -19,48 +34,40 @@ def reorder_chords(index_chord: list):
     return zip(indexes, reversed(chords))
 
 
-def chords_to_line(chords, text_line: str):
-    """
-    Stringify
-
-    index_chord: list(tuple(index:int, chord: str))
-    """
-    chords_line = ''
-    for index, chord in chords:
-        # if there's no space between the chords, add a ' ' and '-'
-        if index - len(chords_line) <= 0:
-            text_line = text_line[:-index] + '-' + text_line[-index:]
-            chords_line += ' '
-
-        chords_line += ' ' * (index - len(chords_line)) + chord
-
-    return chords_line, text_line
+def override_spaces_with_chords(song):
+    for i in range(len(song.chords)):
+        song.spaces[i + 1] = song.spaces[i + 1] - len(song.chords[i])
 
 
-def override_spaces_with_chords(chords, spaces):
-    for i in range(len(chords)):
-        spaces[i + 1] = spaces[i + 1] - len(chords[i])
-
-
-def chords_to_line_1(spaces, chords):
+def chords_to_line_1(song):
     line = ''
-    for i in range(len(chords)):
-        line += ' ' * spaces[i] + chords[i]
-    line += ' ' * spaces[-1]
+    for i in range(len(song.chords)):
+        line += song.chords[i].rjust(song.spaces[i])
+    line += ' ' * song.spaces[-1]
     return line
 
 
-def space_out_chords(chords, spaces, text_line):
-    if spaces[0] == 0:
-        spaces[0] = 1
-        text_line = ' ' + text_line
+def space_out_chords(song):
+    """each space must be at least 1 more than its chord (in length)"""
+    if song.spaces[0] == 0:
+        song.spaces[0] = 1
+        song.text_line = ' ' + song.text_line
 
     accumulate = 0
-    for i in range(len(chords)):
-        accumulate += spaces[i] + len(chords[i])
-        if (diff := len(chords[i]) + 1 - spaces[i + 1]) > 0:
-            spaces[i + 1] += diff
-            text_line = text_line[:accumulate] + '-' * diff + text_line[accumulate:]
+    for i in range(len(song.chords)):
+        accumulate += song.spaces[i]
+        if (diff := (len(song.chords[i]) + 1) - song.spaces[i + 1]) > 0:
+            song.spaces[i + 1] += diff
+            song.insert_text_at('-' * diff, accumulate)
+
+
+def widen_spaces(song):
+    accumulate = 0
+    for i in range(len(song.chords) - 1, 0, -1):
+        if (diff := len(song.chords[i]) + 1 - song.spaces[i]) > 0:
+            song.spaces[i] += diff
+            song.insert_text_at('-' * diff, accumulate)
+        accumulate += song.spaces[i]
 
 
 def extract_chords(line: str):
@@ -73,7 +80,7 @@ def extract_chords(line: str):
     for char in line:
         if char in HEB_CHARS + OTHER_CHARS + END_LINE_CHARS:
             if chord:
-                spaces.append(counter - 1)
+                spaces.append(counter)
                 counter = 0
                 chords.append(''.join(chord))
                 chord = []
@@ -97,20 +104,21 @@ def extract_chords(line: str):
 
 def separate_line(line: str):
     """separate line of text into chords_line, text_line"""
-    chords, spaces, text_line = extract_chords(line)
+    song = SongLine(*extract_chords(line))
 
-    space_out_chords(chords, spaces, text_line)
-    override_spaces_with_chords(chords, spaces)
+    song.chords.reverse()
+    song.spaces.reverse()
 
-    chords.reverse()
-    # spaces.reverse()
+    widen_spaces(song)
+    # space_out_chords(song)
+    # override_spaces_with_chords(song)
 
-    chords_line = chords_to_line_1(spaces, chords)
-    # chords_line, text_line = chords_to_line(chords, text_line)
+    song.chords_line = chords_to_line_1(song)
+    # song.chords_line, text_line = chords_to_line(chords, text_line)
 
-    text_line += ' ' * (len(text_line) - len(chords_line))
+    song.text_line += ' ' * (len(song.text_line) - len(song.chords_line))
 
-    return chords_line, text_line
+    return song.chords_line, song.text_line
 
 
 def main(filename: str):
@@ -119,7 +127,7 @@ def main(filename: str):
 
     with open(filename + '.out.txt', 'w', encoding='utf-8') as out_file:
         for line in lines:
-            chords_line, text_line = separate_line(line)
+            chords_line, text_line = separate_line(line[:-1])
 
             out_file.write(''.join(chords_line) + '\n')
             out_file.write(''.join(text_line) + '\n')
