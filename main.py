@@ -98,7 +98,14 @@ def main(filename: str):
 
 if "__main__" == __name__:
     if len(sys.argv) == 1:
-        main('./demo1.txt')
+        main('./demo.txt')
+    elif any(help_flag in sys.argv for help_flag in ['-h', '--help', '/h']):
+        print('Usage: python main.py [FLAGS] [PATHs]\n'
+              'You can put multiple paths, separated by space.\n'
+              'Note that the paths are relative to pwd.\n\n'
+              'Flags:\n'
+              '  --help \t show help\n'
+              '  --space \t add space before chords with no text\n')
     else:
         for filename in sys.argv[1:]:
             if filename.startswith('--'):  # flags
