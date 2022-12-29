@@ -2,9 +2,9 @@ import re
 import sys
 
 HEB_CHARS = 'אבגדהוזחטיכלמנסעפצקרשתךםןףץ'
-OTHER_CHARS = r' \-_)(,\.'
+OTHER_CHARS = r' \-_)(,\.\\'  # escaping for regex
 END_LINE_CHARS = '\r\n'
-CHORDS_CHARS = 'ABCDEFGabcdefg123456789b#dim'
+CHORDS_CHARS = 'ABCDEFGabcdefg123456789b#dim/'
 
 
 class Settings:
