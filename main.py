@@ -7,6 +7,10 @@ END_LINE_CHARS = '\r\n'
 CHORDS_CHARS = 'ABCDEFGabcdefg123456789b#dim'
 
 
+class Settings:
+    ADD_SPACE_BEFORE_CHORD_WITH_NO_TEXT = False
+
+
 class SongLine:
     def __init__(self, pairs):
         self.pairs = pairs
@@ -26,7 +30,7 @@ class SongLine:
 
         for i in range(len(self.pairs)):
             char, chord = self.pairs[i]
-            if len(char) != 1:
+            if len(char) != 1 and Settings.ADD_SPACE_BEFORE_CHORD_WITH_NO_TEXT:
                 char = ' '
             if chord == '':
                 chord = None
@@ -96,5 +100,9 @@ if "__main__" == __name__:
     if len(sys.argv) == 1:
         main('./demo1.txt')
     else:
-        for filename in sys.argv:
-            main('./' + filename)
+        for filename in sys.argv[1:]:
+            if filename.startswith('--'):  # flags
+                if filename == '--space':
+                    Settings.ADD_SPACE_BEFORE_CHORD_WITH_NO_TEXT = True
+            else:
+                main('./' + filename)
