@@ -1,0 +1,91 @@
+/* Basic styling for the page */
+body {
+    font-family: 'Courier New', Courier, monospace; /* Monospace font for lyrics */
+    direction: rtl; /* Right-to-left for Hebrew */
+    padding: 20px;
+    text-align: right; /* Ensure text is aligned right */
+    overflow: auto; /* Ensure scrolling is enabled by default */
+}
+
+.container {
+    width: 80%;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+textarea {
+    width: 100%;
+    font-size: 18px;
+    padding: 10px;
+    margin: 20px 0;
+    line-height: 1.6;
+    direction: rtl;
+    resize: vertical;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.lyrics-container {
+    margin-top: 30px;
+    font-size: 22px;
+    line-height: 2;
+    white-space: pre-wrap; /* Ensure that line breaks are respected */
+}
+
+.letter {
+    display: inline-block;
+    cursor: pointer;
+    margin: 0 3px;
+    font-size: 30px;
+}
+
+/* Popup for selecting chords - Centered and fixed position */
+.popup {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed position relative to the viewport */
+    left: 50%; /* Center horizontally */
+    top: 50%; /* Center vertically */
+    transform: translate(-50%, -50%); /* Adjust for exact centering */
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Make sure it appears on top of other elements */
+    max-width: 300px;
+    width: 90%; /* Make it responsive */
+    text-align: center;
+}
+
+/* Grid layout for chord buttons inside the popup */
+.popup-content {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for the chord grid */
+    gap: 10px;
+    text-align: center;
+}
+
+/* Styling for each button inside the chord grid */
+.popup-content button {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background-color: #f5f5f5;
+    transition: background-color 0.2s;
+}
+
+/* Hover effect for the buttons inside the popup */
+.popup-content button:hover {
+    background-color: #e0e0e0;
+}
+
+/* Prevent scrolling on body when the popup is open */
+body.popup-open {
+    overflow: hidden; /* Disable scrolling on the body */
+}

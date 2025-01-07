@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyrics with Chords</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Interactive Lyrics with Chords</h1>
+        
+        <!-- Text input area for the user to provide lyrics -->
+        <textarea id="lyrics-input" placeholder="Paste your Hebrew lyrics here..." rows="6"></textarea>
+        <button onclick="generateLyrics()">Generate Lyrics</button>
+
+        <div class="lyrics-container" id="lyrics-container">
+            <!-- The processed lyrics will appear here -->
+        </div>
+    </div>
+
+    <button onclick="bakeLyrics()">Bake</button>
+
+    <!-- Popup for selecting chords -->
+    <div id="chord-popup" class="popup">
+        <div class="popup-content">
+            <h3>Select a Chord</h3>
+            <select id="chord-selector">
+                <option value="Am">Am</option>
+                <option value="Em">Em</option>
+                <option value="C">C</option>
+                <option value="G">G</option>
+                <option value="D">D</option>
+                <!-- More chords can be added here -->
+            </select>
+            <button onclick="addChord()">Add Chord</button>
+            <button onclick="closePopup()">Cancel</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
